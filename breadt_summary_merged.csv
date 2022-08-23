@@ -1,0 +1,27 @@
+row,sample,date,cham_id,tbreadth,which_first,season,notes,season,sex,mass_g,svl_mm
+1,409 fall,11/14/2020,409,27.8,cold,fall,,fall,M,99,142
+2,409 summer,7/26/2021,409,32.9,hot,summer,,summer,M,150,180
+3,426 fall,11/15/2020,426,31.6,hot,fall,,fall,F,67,106
+4,426 summer,7/27/2021,426,29.3,cold,summer,,summer,F,63,136
+5,426 winter,2/6/2021,426,29,cold,winter,,winter,F,68,100
+6,427 fall,11/15/2020,427,23.9,cold,fall,,fall,M,75,157
+7,427 summer,7/26/2021,427,32.9,hot,summer,fungal relapse?,summer,M,79.5,163
+8,427 winter,2/5/2021,427,27.1,hot,winter,,winter,M,80,125
+9,460 fall,11/14/2020,460,29.6,hot,fall,,fall,M,75,155
+10,460 summer,7/26/2021,460,32.4,cold,summer,,summer,M,89,158
+11,460 winter,2/5/2021,460,33.3,cold,winter,,winter,M,80,137
+12,465 fall,11/14/2020,465,27.1,cold,fall,,fall,M,54,125
+13,465 summer,7/26/2021,465,32.3,cold,summer,,summer,M,115,146
+14,465 winter,2/5/2021,465,26.1,cold,winter,,winter,M,65,111
+15,470 fall,11/14/2020,470,29.9,hot,fall,,fall,F,38,126
+16,470 summer,7/26/2021,470,29.6,hot,summer,,summer,F,43.5,120
+17,470 winter,2/5/2021,470,25.7,cold,winter,,winter,F,39,109
+18,478 fall,11/14/2020,478,31.4,cold,fall,,fall,M,30,185
+19,478 summer,7/26/2021,478,32,cold,summer,,summer,M,128.5,177
+20,478 winter,2/5/2021,478,31.7,hot,winter,,winter,M,138,170
+21,491 fall,11/14/2020,491,27.8,hot,fall,,fall,M,32,110
+22,491 summer,7/26/2021,491,28.8,hot,summer,moribund,summer,M,32.5,117
+23,491 winter,2/5/2021,491,28.4,cold,winter,,winter,M,43,104
+24,496 fall,11/14/2020,496,29,hot,fall,,fall,M,52,127
+25,496 winter,2/5/2021,496,28.4,hot,winter,,winter,M,71,124
+26,498 fall,11/14/2020,498,24.3,cold,fall,,fall,F,30,122
