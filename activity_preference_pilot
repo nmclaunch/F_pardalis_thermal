@@ -1,0 +1,99 @@
+### scrap code to play around with incorporating activity and thermal performance data
+
+
+#####Plans####
+##Start with hourly data spreadsheet.
+##Filter dataset to remove hours that occur before sunrise and after sunset
+
+
+###Activity data
+#use the Tpref min and max to generate an activity window
+#filter through the hours on the spreadsheet "yes" "no"
+#count number of yes per day (hourly yes)
+#average # yes's per day per winter period (daily average winter activity window)
+
+
+
+###Performance data
+#extract best performance values from trials. Note the scale (lowest- highest)
+#calculate the best performance and 50% from that... #% can change
+#fit a model/equation to the curve 
+#use the equation to get a performance value by inputting a temperature value
+#apply the equation to all the hourly data for each pixel
+#count the # hours available at the maximal and within 50% performance level
+#average # hours per day per winter period (daily average winter performance availability)
+#average the daily possible performance values (maybe not the best approach)
+
+
+
+####Generate a test dataframe. This will be for one pixel for one day or a few days.
+#https://rdrr.io/cran/chillR/f/inst/doc/hourly_temperatures.Rmd
+library(chillR)
+testdf<-KA_weather[200:205,] #this dataframe comes with the chillR package. subset for faster.
+#for larger dataframe, may need to use "make_all_day_table' to fill any gaps in days.
+hourtemps<-stack_hourly_temps(testdf, latitude = 27, keep_sunrise_sunset = TRUE)$hourtemps
+
+
+#filter out hours that are below sunrise and above sunset
+library(tidyr)
+
+daytime<-hourtemps%>%
+  filter(Hour>Sunrise)%>%
+  filter(Hour<Sunset)
+
+
+####Generate activity window from Tpref data####
+pref<-read.csv("C:/Users/nmcla/Dropbox/2PhysioHerpInvasives_Shared/Data/chameleons/thermal preference/thermal_pref_summary_merged.csv") #adjust to your local directory
+#filter out diseased/dying animals
+pref<-filter(pref,notes_pref!="moribund")
+mean(pref$min_prefbody_temp)
+min(pref$min_prefbody_temp)
+
+mean(pref$max_prefbody_temp)
+max(pref$max_prefbody_temp)
+###using averages our window is 27.072 to 37.168, let's use 27 to 37###
+#minimum in gradient is 21.9 max is 40.6
+
+
+####apply activity threshold to climate data####
+##it is possible that 27 to 37 is too restricted
+daytime$active_smallwindow<-ifelse(daytime$Temp <= 27, "no",
+                       ifelse(daytime$Temp >=37,"no", "yes"))
+
+
+#this is a larger window for all temps measured in gradient 22-40.5
+daytime$active_lrgwindow<-ifelse(daytime$Temp <= 22, "no",
+                                   ifelse(daytime$Temp >=40.5,"no", "yes"))
+
+
+#count number of yes per day
+test <- daytime %>%
+  #group_by(x,y)  %>%  ###with multiple locations will need to un-comment this
+  group_by(Year,Month,Day)%>%
+  count(active_lrgwindow, name= "nhours")
+
+
+
+###options to calculate active hours
+
+#average hours per pixel per day active or not across entire winter period
+testavg<-aggregate(test$nhours, by=list(Category=test$active_lrgwindow), FUN=mean) 
+#will need to add location grouping variable within the list here to get winter avg per pixel
+
+
+#another option, but removes daylight inactive hours
+average_activity <- test %>%
+  #group_by(x,y)%>%
+  filter(active_lrgwindow == "yes")
+
+mean(average_activity$nhours) #have to group by pixel (x,y) for this
+
+
+#this doesnt work...
+#test2 <- test %>%
+#  group_by(active_lrgwindow)%>%
+#  mean(nhours)
+
+#### TO DO ####
+
+###convert the average hours per pixel back into a raster#
