@@ -19,11 +19,11 @@ Species Distribution Modeling
   
   
   Code files:
-  
+  brick.R
   
   
 Metadata
-
+Thermal Traits
 thermal_limit_summary_merged.csv
   row: unique row numbers
   sample: individual ID and season 
@@ -57,3 +57,9 @@ thermal_pref_summary_merged
   cham_thermal_limits_preference.R
     This contains code for analysis and plotting of thermal limits and preference data
     
+
+Species Distribution Modeling
+  brick.R
+    This contains code for extracting data from PRISM, cropping to extent of FL, and extracting point data for min/max.
+ 
+ 
