@@ -53,3 +53,7 @@ thermal_pref_summary_merged
   std_dev_prefbody_temp: the standard deviation of body temperatures of the animal during the thermal preference trial
   notes_pref: any notes that may have affected trial or caused duration of trial to be adjusted
   side_started: the end of the gradient the animal first walked to after starting the trial
+  
+  cham_thermal_limits_preference.R
+    This contains code for analysis and plotting of thermal limits and preference data
+    
