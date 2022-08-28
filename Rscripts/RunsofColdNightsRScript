@@ -1,0 +1,194 @@
+#this code calculates how many nights have cold for a continuous period of time that exceeds survival limits for Furcifer pardalis.  
+#We use daily raster data for Florida and extract Tmin and Tmax and use functions that recreate hourly temps
+#We then detetmine, over each day of the winter period, if conditions are too cold for too long overnight, focusing on winter period Nov. 15-Feb. 15th
+#Because of memory limits, we replicate this in three year time blocks before reassembling into a final output that has mean days below survival limits.
+
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(readr)
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(dtplyr)
+library(tidyfast)
+library(data.table)
+library(chillR)
+library(raster)
+library(anytime)
+library(lubridate)
+
+setwd("../Downloads")
+monthFlorida <- read_csv("20yFlorida.csv")
+monthFlorida$x <- signif(monthFlorida$x, digits = 5)
+monthFlorida$y <- signif(monthFlorida$y, digits = 5)
+monthFlorida$y2 <- monthFlorida$y
+monthFlorida$x2 <- monthFlorida$x
+monthFlorida$Year2 <- as.numeric(monthFlorida$Year)
+monthFlorida$Month2 <- monthFlorida$Month
+monthFlorida2 <- as.data.table(monthFlorida)
+
+
+year0103 <- monthFlorida2 %>% filter(between(Year,2001,2003))
+year01032 <- as.data.table(year0103)
+test <- 
+  lazy_dt(year01032,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year0103df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year0103df2 <- unnest(year0103df, cols = c('hourlydat'))
+sum_days_0103t3 <- year0103df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_0103t3df <- as.data.frame(sum_days_0103t3)
+write.csv(sum_days_0103t3df, file="sum_days_0103dft3.csv")
+
+rm(list=ls())
+gc()
+year0406 <- monthFlorida2 %>% filter(between(Year,2004,2006))
+year04062 <- as.data.table(year0406)
+test <- 
+  lazy_dt(year04062,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year0406df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year0406df2 <- unnest(year0406df, cols = c('hourlydat'))
+sum_days_0406t3 <- year0406df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_0406t3df <- as.data.frame(sum_days_0406t3)
+write.csv(sum_days_0406t3df, file="sum_days_0406dft3.csv")
+
+rm(list=ls())
+gc()
+year0709 <- monthFlorida2 %>% filter(between(Year,2007,2009))
+year07092 <- as.data.table(year0709)
+test <- 
+  lazy_dt(year07092,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year0709df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year0709df2 <- unnest(year0709df, cols = c('hourlydat'))
+sum_days_0709t3 <- year0709df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_0709t3df <- as.data.frame(sum_days_0709t3)
+write.csv(sum_days_0709t3df, file="sum_days_0709dft3.csv")
+
+rm(list=ls())
+gc()
+year1010 <- monthFlorida2 %>% filter(between(Year,2010,2010))
+year10102 <- as.data.table(year1010)
+test <- 
+  lazy_dt(year10102,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year1010df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year1010df2 <- unnest(year1010df, cols = c('hourlydat'))
+sum_days_1010t3 <- year1010df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_1010t3df <- as.data.frame(sum_days_1010t3)
+write.csv(sum_days_1010t3df, file="sum_days_1010dft3.csv")
+
+sum_days_0103t3df <- read_csv("sum_days_0103dft3.csv")
+sum_days_0406t3df <- read_csv("sum_days_0406dft3.csv")
+sum_days_0709t3df <- read_csv("sum_days_0709dft3.csv")
+sum_days_1010t3df <- read_csv("sum_days_1010dft3.csv")
+sum_days_0103t3df <-  subset(sum_days_0103t3df, select=-c(X))
+sum_days_0406t3df <- subset(sum_days_0406t3df, select=-c(X))
+sum_days_0709t3df <- subset(sum_days_0709t3df, select=-c(X))
+sum_days_1010t3df <- subset(sum_days_1010t3df, select=-c(X))
+
+sum_days_all_df_t3_bydec <- rbind(sum_days_0103t3df, sum_days_0406t3df, sum_days_0709t3df, sum_days_1010t3df)
+
+sum_days_all_df_t3_bydec$date2 <- anydate(sum_days_all_df_t3_bydec$Date)
+sum_days_all_df_t3_bydec$Year <- year(sum_days_all_df_t3_bydec$date2)
+sum_days_all_df_t3_bydec_yearave <- sum_days_all_df_t3_bydec %>% group_by(x2,y2,Year) %>% summarize(ave_runs=mean(runs))
+sum_days_all_df_t3_bydec_yearsum <- sum_days_all_df_t3_bydec %>% group_by(x2,y2,Year) %>% summarize(sum_runs_yr = sum(runs))
+
+r <- raster("PRISM_tmin_stable_4kmD2_20011215_bil.tif")
+r_new_t3_0010 <- rasterize(sum_days_all_df_t3_bydec_yearsum[,1:2], r, sum_days_all_df_t3_bydec_yearsum[,4], fun=mean)
+
+
+rm(list=ls())
+gc()
+year1112 <- monthFlorida2 %>% filter(between(Year,2011,2012))
+year11122 <- as.data.table(year1112)
+test <- 
+  lazy_dt(year11122,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year1112df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year1112df2 <- unnest(year1112df, cols = c('hourlydat'))
+sum_days_1112t3 <- year1112df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_1112t3df <- as.data.frame(sum_days_1112t3)
+write.csv(sum_days_1112t3df, file="sum_days_1112dft3.csv")
+
+rm(list=ls())
+gc()
+year1315 <- monthFlorida2 %>% filter(between(Year,2013,2015))
+year13152 <- as.data.table(year1315)
+test <- 
+  lazy_dt(year13152,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year1315df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year1315df2 <- unnest(year1315df, cols = c('hourlydat'))
+sum_days_1315t3 <- year1315df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_1315t3df <- as.data.frame(sum_days_1315t3)
+write.csv(sum_days_1315t3df, file="sum_days_1315dft3.csv")
+
+rm(list=ls())
+gc()
+year1618 <- monthFlorida2 %>% filter(between(Year,2016,2018))
+year16182 <- as.data.table(year1618)
+test <- 
+  lazy_dt(year16182,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year1618df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year1618df2 <- unnest(year1618df, cols = c('hourlydat'))
+sum_days_1618t3 <- year1618df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_1618t3df <- as.data.frame(sum_days_1618t3)
+write.csv(sum_days_1618t3df, file="sum_days_1618dft3.csv")
+
+rm(list=ls())
+gc()
+year1920 <- monthFlorida2 %>% filter(between(Year,2019,2020))
+year19202 <- as.data.table(year1920)
+test <- 
+  lazy_dt(year19202,immutable = FALSE)  %>% 
+  group_by(x,y,Month2,Year2)  %>% 
+  group_map(function(data, group_info, .keep=TRUE) {
+    tibble::tibble(hourlydat = stack_hourly_temps(data, latitude=group_info$y , keep_sunrise_sunset = TRUE)$hourtemps)
+  })
+year1920df <- as.data.frame(bind_rows(test, .id = "column_label"))
+year1920df2 <- unnest(year1920df, cols = c('hourlydat'))
+sum_days_1920t3 <- year1920df2  %>% group_by(x2,y2,Date ) %>% summarize(runs = with(rle(Temp < 3), sum(lengths[values] >= 6)))
+sum_days_1920t3df <- as.data.frame(sum_days_1920t3)
+write.csv(sum_days_1920t3df, file="sum_days_1920dft3.csv")
+
+sum_days_1112t3df <- read_csv("sum_days_1112dft3.csv")
+sum_days_1315t3df <- read_csv("sum_days_1315dft3.csv")
+sum_days_1618t3df <- read_csv("sum_days_1618dft3.csv")
+sum_days_1920t3df <- read_csv("sum_days_1920dft3.csv")
+sum_days_1112t3df <- subset(sum_days_1112t3df, select=-c(X))
+sum_days_1315t3df <- subset(sum_days_1315t3df, select=-c(X))
+sum_days_1618t3df <- subset(sum_days_1618t3df, select=-c(X))
+sum_days_1920t3df <- subset(sum_days_1920t3df, select=-c(X))
+
+sum_days_all_df_t3 <- rbind(sum_days_1112t3df, sum_days_1315t3df, sum_days_1618t3df, sum_days_1920t3df)
+sum_days_all_df_t3$date2 <- anydate(sum_days_all_df_t3$Date)
+sum_days_all_df_t3$Year <- year(sum_days_all_df_t3$date2)
+sum_days_all_df_t3_yearave <- sum_days_all_df_t3 %>% group_by(x2,y2,Year) %>% summarize(ave_runs=mean(runs))
+sum_days_all_df_t3_yearsum <- sum_days_all_df_t3 %>% group_by(x2,y2,Year) %>% summarize(sum_runs_yr = sum(runs))
+
+r <- raster("PRISM_tmin_stable_4kmD2_20011215_bil.tif")
+r_new_t3_2011_2020 <- rasterize(sum_days_all_df_t3_yearsum[,1:2], r, sum_days_all_df_t3_yearsum[,4], fun=mean)
