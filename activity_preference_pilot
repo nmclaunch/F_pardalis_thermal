@@ -31,11 +31,22 @@
 library(chillR)
 testdf<-KA_weather[200:205,] #this dataframe comes with the chillR package. subset for faster.
 #for larger dataframe, may need to use "make_all_day_table' to fill any gaps in days.
-hourtemps<-stack_hourly_temps(testdf, latitude = 27, keep_sunrise_sunset = TRUE)$hourtemps
+hourtemps<-stack_hourly_temps(testdf, latitude = 30, keep_sunrise_sunset = TRUE)$hourtemps
+
+#write.csv(hourtemps, "2pxlhrtempstest2.csv")
+str(hourtemps)
+##the above is only one pixel. here is a dataframe with more than one pixel
+hourtemps<-read.csv("2pxlhrtempstest.csv")
+str(hourtemps)
+hourtemps$Hour<-as.numeric(hourtemps$Hour)
 
 
 #filter out hours that are below sunrise and above sunset
 library(tidyr)
+library(dplyr)
+
+##where the hourtemps dataframe is long format hourly temperatures for each pixel, YMD
+##needs to have the sunrise/sunset columns!
 
 daytime<-hourtemps%>%
   filter(Hour>Sunrise)%>%
@@ -55,6 +66,8 @@ max(pref$max_prefbody_temp)
 #minimum in gradient is 21.9 max is 40.6
 
 
+
+
 ####apply activity threshold to climate data####
 ##it is possible that 27 to 37 is too restricted
 daytime$active_smallwindow<-ifelse(daytime$Temp <= 27, "no",
@@ -68,26 +81,39 @@ daytime$active_lrgwindow<-ifelse(daytime$Temp <= 22, "no",
 
 #count number of yes per day
 test <- daytime %>%
-  #group_by(x,y)  %>%  ###with multiple locations will need to un-comment this
-  group_by(Year,Month,Day)%>%
+  group_by(x,y,Year,Month,Day)%>%
   count(active_lrgwindow, name= "nhours")
+
 
 
 
 ###options to calculate active hours
 
-#average hours per pixel per day active or not across entire winter period
-testavg<-aggregate(test$nhours, by=list(Category=test$active_lrgwindow), FUN=mean) 
-#will need to add location grouping variable within the list here to get winter avg per pixel
+#average hours per pixel per day active or not across ENTIRE winter period
+testavg<-aggregate(list(nhours=test$nhours), by=list(x=test$x, y=test$y, Category=test$active_lrgwindow), FUN=mean) 
 
+
+#calculate the % of active daylight hours per winter period per pixel.
+percactive<-testavg%>%
+  group_by(x,y)%>%
+  mutate(perc= ifelse(Category=="yes", 100*(nhours[Category=="yes"]/(nhours[Category=="yes"]+nhours[Category=="no"])), NA))%>%
+  drop_na(perc)
+
+#this final dataframe gives both average active hours and % active daylight hours
+
+
+
+##########################################################
+####code that didn't quite work, comment out####
+#average hours per pixel per day active or not per year
+#testavg<-aggregate(list(nhours=test$nhours), by=list(x=test$x, y=test$y, year=test$Year, Category=test$active_lrgwindow), FUN=mean) 
 
 #another option, but removes daylight inactive hours
-average_activity <- test %>%
+#average_activity <- test %>%
   #group_by(x,y)%>%
-  filter(active_lrgwindow == "yes")
+#  filter(active_lrgwindow == "yes")
 
-mean(average_activity$nhours) #have to group by pixel (x,y) for this
-
+#mean(average_activity$nhours) #have to group by pixel (x,y) for this
 
 #this doesnt work...
 #test2 <- test %>%
@@ -97,3 +123,41 @@ mean(average_activity$nhours) #have to group by pixel (x,y) for this
 #### TO DO ####
 
 ###convert the average hours per pixel back into a raster#
+library(raster)
+coordinates(percactive)<- ~x+y
+
+##need an empty raster object first?
+#rasterize(percactive, raster, 'nhours')
+
+##need a bit more code here to finish converting to raster
+
+#writeRaster(avg_active, paste0(names(avg_active),".tif"), bylayer=TRUE, format="GTiff")
+#######################################################################################
+
+
+
+
+
+
+
+#####Generate curve from Performance Data####
+###try this code here###
+#use this #https://padpadpadpad.github.io/rTPC/
+
+df<-read.csv("test_perf.csv")
+df<-read.csv("Sprint_df_test.csv")
+df$trial_temp<-as.numeric(df$trial_temp)
+df$cham_id<-as.factor(df$cham_id)
+
+#need to plug in the CTmin and max values
+
+library(mgcv)
+?gamm
+
+
+##not enough trial temps for the model, but the final cham temp works.
+
+
+####Apply curve to hourly dataset####
+
+####extract and condense outputs from hourly dataset####
