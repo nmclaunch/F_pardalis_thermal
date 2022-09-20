@@ -1,19 +1,17 @@
-### scrap code to play around with incorporating activity and thermal performance data
+##This code first starts with full hourly data for 2001 to 2020 Dec 15-Feb 15.
+##Then, it filters to return only daylight hours, when Furcifer pardalis is potentially active
+##Due to memory limitations, this code is run in batches and dataframes are saved as .csv, 
+##then read in and appended together at the end.
+##The daylight hours subset is then used to estimate activity and preference.
+
+###Activity
+#We use the min and max data for thermal preference collected in lab trials to generate an activity window
+#Using this range, we filter through the hours on the spreadsheet for active temperatures "yes" and inactive temperatures "no"
+#We then count number of active/inactive per day,
+#then average # yes's per day per winter period (daily average winter activity window
 
 
-#####Plans####
-##Start with hourly data spreadsheet.
-##Filter dataset to remove hours that occur before sunrise and after sunset
-
-
-###Activity data
-#use the Tpref min and max to generate an activity window
-#filter through the hours on the spreadsheet "yes" "no"
-#count number of yes per day (hourly yes)
-#average # yes's per day per winter period (daily average winter activity window)
-
-
-
+####IN PROGRESS####
 ###Performance data
 #extract best performance values from trials. Note the scale (lowest- highest)
 #calculate the best performance and 50% from that... #% can change
@@ -26,31 +24,70 @@
 
 
 
-####Generate a test dataframe. This will be for one pixel for one day or a few days.
-#https://rdrr.io/cran/chillR/f/inst/doc/hourly_temperatures.Rmd
-library(chillR)
-testdf<-KA_weather[200:205,] #this dataframe comes with the chillR package. subset for faster.
-#for larger dataframe, may need to use "make_all_day_table' to fill any gaps in days.
-hourtemps<-stack_hourly_temps(testdf, latitude = 30, keep_sunrise_sunset = TRUE)$hourtemps
-
-#write.csv(hourtemps, "2pxlhrtempstest2.csv")
-str(hourtemps)
-##the above is only one pixel. here is a dataframe with more than one pixel
-hourtemps<-read.csv("2pxlhrtempstest.csv")
-str(hourtemps)
-hourtemps$Hour<-as.numeric(hourtemps$Hour)
-
 
 #filter out hours that are below sunrise and above sunset
+#install.packages("dtplyr")
+library(dtplyr)
+library(data.table)
 library(tidyr)
 library(dplyr)
+
+
+####Take all the hourly data, filter for daylight hours, then append together in one table
+d1<-fread("Full Hourly Data/year0103df220012.csv")
+d2<-fread("Full Hourly Data/year0103df220022.csv")
+d3<-fread("Full Hourly Data/year0103df220032.csv")
+d4<-fread("Full Hourly Data/year0406df220042.csv")
+d5<-fread("Full Hourly Data/year0406df220052.csv")
+d6<-fread("Full Hourly Data/year0607df220062.csv")
+d7<-fread("Full Hourly Data/year20074Nat.csv")
+d8<-fread("Full Hourly Data/year2008to20134NC/year0809df220082.csv")
+d9<-fread("Full Hourly Data/year2008to20134NC/year0809df220092.csv")
+d10<-fread("Full Hourly Data/year2008to20134NC/year1011df220102.csv")
+
+### do the daylight sorting in 2 batches of 10 to save memory.
+
+
+d11<-fread("Full Hourly Data/year2008to20134NC/year1011df220112.csv")
+d12<-fread("Full Hourly Data/year2008to20134NC/year1213df220122.csv")
+d13<-fread("Full Hourly Data/year2008to20134NC/year1213df220132.csv")
+d14<-fread("Full Hourly Data/year2014to20204NC/year1415df220142.csv")
+d15<-fread("Full Hourly Data/year2014to20204NC/year1415df220152.csv")
+d16<-fread("Full Hourly Data/year2014to20204NC/year1617df220162.csv")
+d17<-fread("Full Hourly Data/year2014to20204NC/year1617df220172.csv")
+d18<-fread("Full Hourly Data/year2014to20204NC/year1819df220182.csv")
+d19<-fread("Full Hourly Data/year2014to20204NC/year1819df220192.csv")
+d20<-fread("Full Hourly Data/year2014to20204NC/year2020df220202.csv")
+
 
 ##where the hourtemps dataframe is long format hourly temperatures for each pixel, YMD
 ##needs to have the sunrise/sunset columns!
 
-daytime<-hourtemps%>%
+#apply this code to every d# above, append to the allday dataframe.
+d2<-d2%>%
   filter(Hour>Sunrise)%>%
   filter(Hour<Sunset)
+
+d2<-as_tibble(d2)
+
+d1<-d1%>%
+  filter(Hour>Sunrise)%>%
+  filter(Hour<Sunset)
+
+d1<-as_tibble(d1)
+
+allday<-rbind(allday, d20)
+unique(allday$Date)
+
+#d19<-0 #reassign names as 0 once finished to save memory without clearing environment completely.
+
+#ftable(allday)
+str(allday)
+# as ftable, then fwrite
+#fwrite(allday, "Full Hourly Data/11to20.csv")
+
+
+unique(allday$Date)
 
 
 ####Generate activity window from Tpref data####
@@ -68,96 +105,102 @@ max(pref$max_prefbody_temp)
 
 
 
+
+
+
+
+###Read in the data thresholded by daylight hours
+
+d1<-fread("Full Hourly Data/01to10.csv")
+#do process with first decade, then second, then append.
+
+###probably have to run code separately for each 10 year batch, memory issue.
+
 ####apply activity threshold to climate data####
 ##it is possible that 27 to 37 is too restricted
-daytime$active_smallwindow<-ifelse(daytime$Temp <= 27, "no",
-                       ifelse(daytime$Temp >=37,"no", "yes"))
+d1$active_smallwindow<-ifelse(d1$Temp <= 27, "no",
+                       ifelse(d1$Temp >=37,"no", "yes"))
 
+#d1<-fread("Full Hourly Data/01to10.csv")
+d1<-fread("Full Hourly Data/11to20.csv")
 
 #this is a larger window for all temps measured in gradient 22-40.5
-daytime$active_lrgwindow<-ifelse(daytime$Temp <= 22, "no",
-                                   ifelse(daytime$Temp >=40.5,"no", "yes"))
-
+#use this in analyses
+d1$active_lrgwindow<-ifelse(d1$Temp <= 22, "no",
+                                   ifelse(d1$Temp >=40.5,"no", "yes"))
 
 #count number of yes per day
-test <- daytime %>%
-  group_by(x,y,Year,Month,Day)%>%
+d1sum <- d1 %>%
+  group_by(x2,y2,Year,Month,Day)%>%
   count(active_lrgwindow, name= "nhours")
 
+d1sum<-as_tibble(d1sum)
 
+####There are many instances where all hours are active ("yes") or inactive ("no") variables for a pixel and date.
 
+###This code adds "yes" and "0" where they are missing
+nos<-d1sum%>%
+  filter(active_lrgwindow=="no")%>%
+  filter(nhours==11)
+nos<-as_tibble(nos)
+nhours11_new <-replace(nos, 7,0)
+nhours11_new <-replace(nhours11_new, 6,"yes")
+d1_zeroes_added <-rbind(d1sum,nhours11_new)
 
-###options to calculate active hours
+#Then, add "no" and "0" where they are missing
+yess<-d1sum%>%
+  filter(active_lrgwindow=="yes")%>%
+  filter(nhours==11)
+yess<-as_tibble(yess)
+nhours11_new <-replace(yess, 7,0)
+nhours11_new <-replace(nhours11_new, 6,"no")
+d1_zeroes_added <-rbind(d1_zeroes_added,nhours11_new)
+
+#write the end product to a csv
+#fwrite(d1_zeroes_added, "Full Hourly Data/11to20activesummary.csv")
+
+#APPEND THE 2 DECADES TOGETHER HERE
+d1<-fread("Full Hourly Data/01to10activesummary.csv")
+d2<-fread("Full Hourly Data/11to20activesummary.csv")
+alldata<-rbind(d1,d2)
+
+###calculate active hours
 
 #average hours per pixel per day active or not across ENTIRE winter period
-testavg<-aggregate(list(nhours=test$nhours), by=list(x=test$x, y=test$y, Category=test$active_lrgwindow), FUN=mean) 
+avg_activity<-aggregate(list(nhours=alldata$nhours), by=list(x=alldata$x2, y=alldata$y2, Category=alldata$active_lrgwindow), FUN=mean) 
 
+#this outputs mean # daylight hours inactive (no) and active (yes)
 
-#calculate the % of active daylight hours per winter period per pixel.
-percactive<-testavg%>%
+#then calculate the % of active daylight hours per winter period per pixel.
+percactive<-avg_activity%>%
   group_by(x,y)%>%
   mutate(perc= ifelse(Category=="yes", 100*(nhours[Category=="yes"]/(nhours[Category=="yes"]+nhours[Category=="no"])), NA))%>%
   drop_na(perc)
 
-#this final dataframe gives both average active hours and % active daylight hours
+#fwrite(percactive, "Full Hourly Data/01to20activitysummary.csv")
+#this final dataframe gives both average daylight active hours and % active daylight hours
 
-
-
-##########################################################
-####code that didn't quite work, comment out####
-#average hours per pixel per day active or not per year
-#testavg<-aggregate(list(nhours=test$nhours), by=list(x=test$x, y=test$y, year=test$Year, Category=test$active_lrgwindow), FUN=mean) 
-
-#another option, but removes daylight inactive hours
-#average_activity <- test %>%
-  #group_by(x,y)%>%
-#  filter(active_lrgwindow == "yes")
-
-#mean(average_activity$nhours) #have to group by pixel (x,y) for this
-
-#this doesnt work...
-#test2 <- test %>%
-#  group_by(active_lrgwindow)%>%
-#  mean(nhours)
-
-#### TO DO ####
+###now to convert to a raster!!###
+activity<-fread("Full Hourly Data/01to20activitysummary.csv")
 
 ###convert the average hours per pixel back into a raster#
 library(raster)
-coordinates(percactive)<- ~x+y
+coordinates(activity)<- ~x+y
 
-##need an empty raster object first?
-#rasterize(percactive, raster, 'nhours')
+#read in already-cropped FL raster to copy extent
+r<-raster("Thresholded_daily_temps/9C/PanChemT9L6.tif")
+activity_nhours_raster<-rasterize(activity[,1:2], r, activity$nhours)
+activity_percent_raster<-rasterize(activity[,1:2], r, activity$perc)
 
-##need a bit more code here to finish converting to raster
+plot(activity_nhours_raster)
+plot(activity_percent_raster)
 
-#writeRaster(avg_active, paste0(names(avg_active),".tif"), bylayer=TRUE, format="GTiff")
-#######################################################################################
-
-
-
-
-
+#writeRaster(activity_nhours_raster, paste0(names(activity_nhours_raster),"activity_nhours_raster.tif"), bylayer=TRUE, format="GTiff")
+#writeRaster(activity_percent_raster, paste0(names(activity_percent_raster),"activity_percent_raster.tif"), bylayer=TRUE, format="GTiff")
 
 
-#####Generate curve from Performance Data####
-###try this code here###
-#use this #https://padpadpadpad.github.io/rTPC/
-
-df<-read.csv("test_perf.csv")
-df<-read.csv("Sprint_df_test.csv")
-df$trial_temp<-as.numeric(df$trial_temp)
-df$cham_id<-as.factor(df$cham_id)
-
-#need to plug in the CTmin and max values
-
-library(mgcv)
-?gamm
 
 
-##not enough trial temps for the model, but the final cham temp works.
 
 
-####Apply curve to hourly dataset####
 
-####extract and condense outputs from hourly dataset####
