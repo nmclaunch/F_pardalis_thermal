@@ -46,7 +46,7 @@ log_q10_morph_df <- q10_morph_df %>%
 hist(log_q10_morph_df$log_q10)
 
 # q10 model: accounting for repeated measures
-q10_model <- lme(log_q10 ~ Season + svl.mm. + factor(Temp_range), random=~1|cham_id, 
+q10_model <- lme(log_q10 ~ Season + svl.mm. + sex + factor(Temp_range), random=~1|cham_id, 
           data = log_q10_morph_df, method='REML')
 summary(q10_model)
 anova(q10_model)
