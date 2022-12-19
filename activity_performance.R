@@ -11,14 +11,19 @@
 
 setwd("C:/Users/nmcla/Dropbox/2PhysioHerpInvasives_Shared/Data/chameleon_SDM")
 
-#filter out hours that are below sunrise and above sunset
-#install.packages("dtplyr")
+#packages for all analyses:
 library(dtplyr)
 library(data.table)
+library(tidyverse)
 library(tidyr)
 library(dplyr)
+library(raster)
+library(ggplot2)
+library(mgcv)
+library(gamair)
 
 
+####filter out hours that are below sunrise and above sunset####
 ####Take all the hourly data, filter for daylight hours, then append together in one table
 d1<-fread("Full Hourly Data/year0103df220012.csv")
 d2<-fread("Full Hourly Data/year0103df220022.csv")
@@ -176,7 +181,6 @@ percactive<-avg_activity%>%
 activity<-fread("Full Hourly Data/01to20activitysummary.csv")
 
 ###convert the average hours per pixel back into a raster#
-library(raster)
 coordinates(activity)<- ~x+y
 
 #read in already-cropped FL raster to copy extent
@@ -205,11 +209,6 @@ plot(activity_percent_raster)
 #apply the equation to all the daytime hourly data for each pixel
 #average daily predicted performance per pixel for winter period 
 #determine areas that fall below 80% predicted performance threshold
-
-library("ggplot2")
-library(mgcv)
-library(gamair)
-library(dplyr)
 
 df<-read.csv("performance_summary_withlimits.csv")
 str(df)
@@ -319,8 +318,7 @@ x<-left_join(
 ####The following was ran in a computing cluster due to personal computer memory use limitations
 ###User mileage may vary
 ####Read in performance data, combine and write to raster.#####
-library(data.table)
-library(dplyr)
+
 #head(d2)
 d1<-fread("01to10_day_performance.csv")
 d2<-fread("11to20_day_performance.csv")
@@ -369,8 +367,6 @@ plot(threshold_80_perf_raster)
 ####activity thresholds, and performance
 #### by setting them all to an equivalent scale 0 to 1 as rasters
 
-library(tidyverse)
-library(raster)
 ###CTmin will have to read in raster to points
 CTmin3<-raster("Raster_outputs/PanChemT3L6.tif")
 CTmin6<-raster("Raster_outputs/PanChemT6L6.tif")
