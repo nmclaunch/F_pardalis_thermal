@@ -1,0 +1,79 @@
+Wed Jan 18 13:56:27 EST 2023
+MaxEnt version 3.4.1
+Checking header of C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC\bio_13.asc
+Checking header of C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC\bio_18.asc
+Checking header of C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC\bio_3.asc
+Checking header of C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC\bio_5.asc
+Checking header of C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC\bio_7.asc
+Reading samples from Furcifer_pardalis_joint.csv
+Read samples: max memory 477626368, total allocated 191365120, free 156624712, used 34740408, increment 34740408
+Extractor: max memory 477626368, total allocated 191365120, free 155111624, used 36253496, increment 1513088
+Extracting random background and sample data
+Warning: Sample at 49.25, -11.95 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 49.25, -11.95 which has no environmental data
+Warning: Sample at 49.008008, -12.247679 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 49.008008, -12.247679 which has no environmental data
+Warning: Sample at 48.488567, -13.366683 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 48.488567, -13.366683 which has no environmental data
+Warning: Sample at 48.30583333, -13.40972222 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 48.30583333, -13.40972222 which has no environmental data
+Warning: Sample at 48.237293, -13.48381 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 48.237293, -13.48381 which has no environmental data
+Warning: Sample at 50.0931452, -13.70619393 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 50.0931452, -13.70619393 which has no environmental data
+Warning: Sample at 50.483333, -15.25 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 50.483333, -15.25 which has no environmental data
+Warning: Sample at 49.895854, -16.874963 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 49.895854, -16.874963 which has no environmental data
+Warning: Sample at 49.7445954, -18.23120184 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 49.7445954, -18.23120184 which has no environmental data
+Warning: Sample at 49.240045, -18.747674 in Furcifer_pardalis_joint.csv is missing some environmental data (e.g. bio_13)
+Warning: Skipping sample at 49.240045, -18.747674 which has no environmental data
+Time since start: 3.263
+377216 points with values for all grids
+Adding samples to background in feature space
+Command line used: 
+Command line to repeat: java density.MaxEnt nowarnings noprefixes outputdirectory=C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC projectionlayers=C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Projection\bestPred_EC samplesfile=C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\OccData\Furcifer_pardalis_joint.csv environmentallayers=C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC randomseed randomtestpoints=50 betamultiplier=2.0 threshold noautofeature nodoclamp
+Species: Furcifer_pardalis
+Layers: bio_13 bio_18 bio_3 bio_5 bio_7
+Layertypes: Continuous Continuous Continuous Continuous Continuous
+outputdirectory: C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC
+projectionlayers: C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Projection\bestPred_EC
+samplesfile: C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\OccData\Furcifer_pardalis_joint.csv
+environmentallayers: C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\EnvData\Training\bestPreds_EC
+randomseed: true
+randomtestpoints: 50
+betamultiplier: 2.0
+threshold: true
+autofeature: false
+doclamp: false
+
+getSamples: max memory 477626368, total allocated 191365120, free 148349312, used 43015808, increment 6762312
+Making features
+makeFeatures: max memory 477626368, total allocated 191365120, free 146646856, used 44718264, increment 1702456
+Furcifer_pardalis: 
+Regularization values: linear/quadratic/product: 0.243, categorical: 0.250, threshold: 1.270, hinge: 0.500
+73 samples
+Density: max memory 477626368, total allocated 191365120, free 137426096, used 53939024, increment 9220760
+linearPredictor: max memory 477626368, total allocated 191365120, free 137345496, used 54019624, increment 80600
+FeaturedSpace: max memory 477626368, total allocated 191365120, free 137345496, used 54019624, increment 0
+Sequential: max memory 477626368, total allocated 191365120, free 137093840, used 54271280, increment 251656
+Initial loss: 9.21761385594268
+Initial test loss: 9.21761385594268
+Time since start: 6.561
+420: time = 2.988000 loss = 7.934090 testLoss 7.740802
+Resulting gain: 1.2835235866594692
+Projecting...
+Writing file C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\Furcifer_pardalis.asc
+Time since start: 8.567
+Writing C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\plots\Furcifer_pardalis.png
+Projecting...
+Writing file C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\Furcifer_pardalis_bestPred_EC.asc
+Writing file C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\Furcifer_pardalis_bestPred_EC_clamping.asc
+Time since start: 10.119
+Writing C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\plots\Furcifer_pardalis_bestPred_EC.png
+Writing C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\plots\Furcifer_pardalis_bestPred_EC_clamping.png
+Writing file C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\Furcifer_pardalis_bestPred_EC_novel.asc
+Writing file C:\Narayani\Projects\Panthor_Chemeleon\GUI\Panther_chameleon\ModelOutput_NC\Furcifer_pardalis_bestPred_EC_novel_limiting.asc
+Time since start: 12.849
+Ending
