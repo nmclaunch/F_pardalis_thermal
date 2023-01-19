@@ -15,3 +15,6 @@ Sprint_df.csv. cham_id: individual chameleon identification number; date: date a
 
 q10_df.csv. Season, cham_id as above. trial_temp: the body temperature at which sprint speed was measured. Temp_range: the pair of temperatures for which q10 value was calculated. Q10: the q10 value resultant from the slop associated with performance of the values in the temp_range column.
 
+morphometrics.csv  Cham_id and Season as above. sex: the sex of the individual; mass(g): mass of the individual in grams; svl(mm): snout vent length of the individual in mm; Tail_lgth(mm): length of the tail in mm. full_tail: Y= the individual has full intact tail, N= individual has partial tail; notes: relevant comments about the individual.
+
+
